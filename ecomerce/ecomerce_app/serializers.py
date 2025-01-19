@@ -8,15 +8,15 @@ from .models import (
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'role', 'is_active', 'date_joined']
-        # extra_kwargs ={
-        #     'password': {
-        #         'write_only': True
-        #     },
-        #     'role': {
-        #         'write_only': True
-        #     }
-        # }
+        fields = ['id', 'username', 'first_name', 'last_name', 'email','password', 'role', 'is_active','avatar', 'date_joined']
+        extra_kwargs ={
+            'password': {
+                'write_only': True
+            },
+            'role': {
+                'write_only': True
+            }
+        }
 
 
 # StoreCategory Serializer
