@@ -4,19 +4,38 @@ from .models import (
     Review, Order, OrderItem, Transaction, SaleStatistics, AdminStatistics
 )
 
+from django.contrib.auth.password_validation import validate_password
+from rest_framework.validators import UniqueValidator
+
 # User Serializer
 class UserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    # avatar = serializers.ImageField(required=True)
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'last_name', 'email','password', 'role', 'is_active','avatar', 'date_joined']
+        fields = ['id', 'username', 'first_name', 'last_name', 'email','password', 'role','is_superuser', 'is_active','avatar', 'date_joined']
         extra_kwargs ={
-            'password': {
-                'write_only': True
-            },
-            'role': {
-                'write_only': True
-            }
+            'password': {'write_only': True},
+
+            'is_active': {'read_only': True},
+            'date_joined': {'read_only': True},
         }
+
+    def create(self, validated_data):
+        role = validated_data.get('role', 'user')  # Mặc định là người dùng
+
+        # Nếu đăng ký là "seller", tài khoản sẽ cần xác nhận trước khi kích hoạt
+        if role == ['user', 'admin', 'staff']:
+            validated_data['is_superuser'] = True
+
+        if role == 'seller':
+            validated_data['is_active'] = False
+            validated_data['is_superuser'] = False
+
+
+        user = User.objects.create_user(**validated_data)
+        return user
 
 
 # StoreCategory Serializer

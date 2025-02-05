@@ -1,5 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from oauth2_provider.models import Application
+
 
 class BaseModel(models.Model):
     class Meta:
